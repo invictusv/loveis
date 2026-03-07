@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Открытка для любимой</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:linear-gradient(180deg,#ffe6f1,#fff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+.card{
+  width:min(760px,92vw);
+  height:420px;
+  border-radius:26px;
+  perspective:1200px;
+  cursor:pointer;
+  position:relative;
+}
+
+.side{
+  position:absolute;
+  inset:0;
+  border-radius:26px;
+  padding:40px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  backface-visibility:hidden;
+  transform-style:preserve-3d;
+  transition:transform .9s cubic-bezier(.2,.9,.2,1);
+  box-shadow:0 25px 60px rgba(0,0,0,.18);
+}
+
+.front{
+  background:
+    radial-gradient(400px 200px at 20% 20%, rgba(255,255,255,.6), transparent 60%),
+    linear-gradient(135deg,#ff4fa3,#ff8fc7);
+  color:white;
+}
+
+.inside{
+  background:linear-gradient(180deg,#fff,#fff0f7);
+  transform:rotateY(-180deg);
+}
+
+.card.open .front{transform:rotateY(180deg)}
+.card.open .inside{transform:rotateY(0deg)}
+
+h1{font-size:42px;margin:0 0 10px}
+.subtitle{font-size:18px;opacity:.9}
+
+.message{
+  font-size:20px;
+  line-height:1.6;
+  max-width:480px;
+}
+
+.signature{
+  margin-top:24px;
+  font-weight:700;
+  color:#ff4fa3;
+}
+
+.controls{
+  display:flex;
+  gap:10px;
+  margin-top:25px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.btn{
+  padding:12px 18px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  background:#ff4fa3;
+  color:white;
+  cursor:pointer;
+}
+
+.btn.secondary{background:#ff8fc7}
+
+canvas{position:absolute;inset:0;pointer-events:none}
+
+.star{
+  position:absolute;
+  width:3px;
+  height:3px;
+  background:white;
+  border-radius:50%;
+  opacity:.6;
+  animation:twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle{from{opacity:.2}to{opacity:.9}}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+
+<div class="side front">
+<h1>💖 С 8 Марта</h1>
+<div class="subtitle">Нажми, чтобы открыть</div>
+</div>
+
+<div class="side inside">
+
+<div class="message">
+Для самой красивой девушки 💖<br><br>
+Пусть каждый твой день будет таким же
+ярким, как твоя улыбка.<br>
+Пусть рядом всегда будет тепло,
+радость и любовь.<br><br>
+Ты делаешь мой мир лучше.
+</div>
+
+<div class="signature">Люблю тебя</div>
+
+<div class="controls">
+<button class="btn" id="hearts">💗 Сердечки</button>
+<button class="btn secondary" id="kiss">💋 Поцелуй</button>
+<button class="btn" id="tulips">🌷 Тюльпаны</button>
+</div>
+
+</div>
+
+<canvas id="fx"></canvas>
+
+</div>
+
+<script>
+const card=document.getElementById('card')
+const canvas=document.getElementById('fx')
+const ctx=canvas.getContext('2d')
+
+function resize(){
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+}
+resize()
+window.addEventListener('resize',resize)
+
+card.onclick=e=>{
+if(e.target.tagName!="BUTTON"){
+card.classList.toggle('open')
+spawnBurst(window.innerWidth/2,window.innerHeight/2,60)
+}
+}
+
+let particles=[]
+let anim
+
+function heart(x,y,size){
+ctx.beginPath()
+ctx.moveTo(x,y)
+ctx.bezierCurveTo(x-size,y-size,x-size*2,y+size/2,x,y+size*2)
+ctx.bezierCurveTo(x+size*2,y+size/2,x+size,y-size,x,y)
+ctx.fill()
+}
+
+function kiss(x,y,size){
+ctx.font=size+"px serif"
+ctx.fillText("💋",x,y)
+}
+
+function tulip(x,y,size,color,rot,leafTilt){
+ctx.save()
+ctx.translate(x,y)
+ctx.rotate(rot)
+
+const grad=ctx.createLinearGradient(0,-size*2.1,0,size*.4)
+grad.addColorStop(0,'#fff4fb')
+grad.addColorStop(.28,color)
+grad.addColorStop(1,color)
+
+ctx.fillStyle=grad
+ctx.beginPath()
+ctx.moveTo(0,0)
+ctx.quadraticCurveTo(-size*.95,-size*.95,-size*.42,-size*2.05)
+ctx.quadraticCurveTo(0,-size*1.55,size*.42,-size*2.05)
+ctx.quadraticCurveTo(size*.95,-size*.95,0,0)
+ctx.fill()
+
+ctx.strokeStyle='#2b9a55'
+ctx.lineWidth=Math.max(1.6,size*.16)
+ctx.lineCap='round'
+ctx.beginPath()
+ctx.moveTo(0,0)
+ctx.quadraticCurveTo(size*.08,size*.7,0,size*2.25)
+ctx.stroke()
+
+ctx.fillStyle='#4bc06f'
+ctx.beginPath()
+ctx.moveTo(0,size*.82)
+ctx.quadraticCurveTo(-size*(.78+leafTilt),size*.35,-size*.18,size*1.55)
+ctx.quadraticCurveTo(-size*.02,size*1.18,0,size*.82)
+ctx.fill()
+
+ctx.beginPath()
+ctx.moveTo(0,size*1.02)
+ctx.quadraticCurveTo(size*(.58+leafTilt*.4),size*.62,size*.12,size*1.82)
+ctx.quadraticCurveTo(size*.01,size*1.35,0,size*1.02)
+ctx.fill()
+
+ctx.restore()
+}
+
+function spawnBurst(x,y,count){
+for(let i=0;i<count;i++){
+particles.push({x,y,vx:(Math.random()-0.5)*5,vy:-(Math.random()*2.2+0.6),life:120+Math.random()*40,size:6+Math.random()*8,type:"heart"})
+}
+startAnim()
+}
+
+function startHearts(){
+particles=particles.concat(Array.from({length:200},()=>({
+x:Math.random()*canvas.width,
+y:canvas.height+20,
+vx:(Math.random()-0.5)*0.5,
+vy:-(Math.random()*2.2+0.6),
+life:420,
+size:6+Math.random()*8,
+type:"heart"
+})))
+startAnim()
+}
+
+function startKisses(){
+particles=particles.concat(Array.from({length:120},()=>({
+x:Math.random()*canvas.width,
+y:canvas.height+20,
+vx:(Math.random()-0.5)*0.5,
+vy:-(Math.random()*2.2+0.6),
+life:420,
+size:20+Math.random()*10,
+type:"kiss"
+})))
+startAnim()
+}
+
+function startTulips(){
+const colors=["#ff4fa3","#ffd84d","#8e5cff"]
+particles=particles.concat(Array.from({length:120},()=>({
+x:Math.random()*canvas.width,
+y:-20,
+vx:(Math.random()-0.5)*0.9,
+vy:(Math.random()*2+1),
+vr:(Math.random()-0.5)*0.03,
+rot:(Math.random()-0.5)*0.5,
+leafTilt:Math.random()*0.35,
+life:260,
+size:9+Math.random()*7,
+color:colors[Math.floor(Math.random()*colors.length)],
+type:"tulip"
+})))
+startAnim()
+}
+
+function startAnim(){if(!anim)animate()}
+
+function animate(){
+anim=requestAnimationFrame(animate)
+ctx.clearRect(0,0,canvas.width,canvas.height)
+ctx.fillStyle="#ff4fa3"
+
+particles.forEach(p=>{
+p.x+=p.vx
+p.y+=p.vy
+p.vy+=0.003
+p.life--
+
+if(p.type==="heart") heart(p.x,p.y,p.size)
+else if(p.type==="kiss") kiss(p.x,p.y,p.size)
+else {
+p.rot+=p.vr
+ tulip(p.x,p.y,p.size,p.color,p.rot,p.leafTilt)
+}
+})
+
+particles=particles.filter(p=>p.life>0)
+
+if(!particles.length){
+cancelAnimationFrame(anim)
+anim=null
+}
+}
+
+// кнопки
+ document.getElementById('hearts').onclick=e=>{e.stopPropagation();startHearts()}
+ document.getElementById('kiss').onclick=e=>{e.stopPropagation();startKisses()}
+ document.getElementById('tulips').onclick=e=>{e.stopPropagation();startTulips()}
+
+// звезды
+for(let i=0;i<60;i++){
+const s=document.createElement('div')
+s.className='star'
+s.style.left=Math.random()*100+'%'
+s.style.top=Math.random()*100+'%'
+document.body.appendChild(s)
+}
+
+</script>
+
+</body>
+</html>
