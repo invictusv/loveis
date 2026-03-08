@@ -6,6 +6,7 @@
 <title>Открытка для любимой</title>
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -15,7 +16,40 @@ body{
   justify-content:center;
   min-height:100vh;
   overflow:hidden;
+  position:relative;
 }
+
+/* фото вокруг открытки */
+.photo-decor{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+
+.pheart{
+  position:absolute;
+  width:140px;
+  aspect-ratio:1/1;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.16));
+  animation:float 6s ease-in-out infinite;
+}
+
+.pheart img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  clip-path:path("M 50 90 C 20 70 0 45 0 25 C 0 5 15 0 28 0 C 40 0 48 8 50 16 C 52 8 60 0 72 0 C 85 0 100 5 100 25 C 100 45 80 70 50 90 Z");
+  border:6px solid rgba(255,255,255,.95);
+  background:#ffdbe9;
+}
+
+.p1{top:4%; left:4%; width:150px; animation-delay:0s;}
+.p2{top:6%; right:4%; width:125px; animation-delay:.8s;}
+.p3{bottom:6%; left:5%; width:130px; animation-delay:1.6s;}
+.p4{bottom:5%; right:5%; width:150px; animation-delay:2.4s;}
+.p5{top:50%; right:1.5%; width:135px; transform:translateY(-50%); animation-delay:3.2s;}
 
 .card{
   width:min(760px,92vw);
@@ -24,7 +58,8 @@ body{
   perspective:1200px;
   cursor:pointer;
   position:relative;
-  overflow:hidden; /* главное: всё лишнее прячется */
+  overflow:hidden;
+  z-index:2;
 }
 
 .side{
@@ -113,11 +148,66 @@ canvas{
   animation:twinkle 3s infinite alternate;
 }
 
-@keyframes twinkle{from{opacity:.2}to{opacity:.9}}
+@keyframes twinkle{
+  from{opacity:.2}
+  to{opacity:.9}
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+
+/* адаптация */
+@media (max-width: 1100px){
+  .pheart{width:115px}
+  .p1{left:1.5%; top:3%}
+  .p2{right:1.5%; top:4%}
+  .p3{left:1.5%; bottom:4%}
+  .p4{right:1.5%; bottom:4%}
+  .p5{right:-1%; top:50%}
+}
+
+@media (max-width: 860px){
+  .pheart{width:95px}
+  .p1{top:2%; left:2%}
+  .p2{top:2%; right:2%}
+  .p3{bottom:2%; left:2%}
+  .p4{bottom:2%; right:2%}
+  .p5{display:none}
+}
+
+@media (max-width: 560px){
+  .card{
+    width:92vw;
+    height:500px;
+  }
+
+  .side{
+    padding:24px;
+  }
+
+  h1{font-size:34px}
+  .message{font-size:17px}
+
+  .pheart{width:82px}
+  .p1{top:1%; left:1%}
+  .p2{top:1%; right:1%}
+  .p3{bottom:1%; left:1%}
+  .p4{bottom:1%; right:1%}
+}
 </style>
 </head>
 
 <body>
+
+<div class="photo-decor">
+  <div class="pheart p1"><img src="photo1.jpg" alt="Фото1"></div>
+  <div class="pheart p2"><img src="photo2.jpg" alt="Фото2"></div>
+  <div class="pheart p3"><img src="photo3.jpg" alt="Фото3"></div>
+  <div class="pheart p4"><img src="photo4.jpg" alt="Фото4"></div>
+  <div class="pheart p5"><img src="photo5.jpg" alt="Фото5"></div>
+</div>
 
 <div class="card" id="card">
 
@@ -333,12 +423,11 @@ document.getElementById('tulips').onclick = e => {
   startTulips()
 }
 
-// звезды
 for(let i=0;i<60;i++){
-  const s=document.createElement('div')
-  s.className='star'
-  s.style.left=Math.random()*100+'%'
-  s.style.top=Math.random()*100+'%'
+  const s = document.createElement('div')
+  s.className = 'star'
+  s.style.left = Math.random()*100+'%'
+  s.style.top = Math.random()*100+'%'
   document.body.appendChild(s)
 }
 </script>
