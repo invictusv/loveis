@@ -19,7 +19,7 @@ body{
   position:relative;
 }
 
-/* фото-сердечки вокруг открытки */
+/* фото-сердечки и розовые сердечки вокруг открытки */
 .orbit-scene{
   position:fixed;
   inset:0;
@@ -62,9 +62,33 @@ body{
   display:block;
 }
 
+.planet.pink{
+  width:auto;
+  height:auto;
+  filter:drop-shadow(0 8px 16px rgba(255,79,163,.25));
+}
+
+.pink-heart{
+  font-size:42px;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+
+.a1{top:40%; left:100%;}
+.a2{top:75%; left:20%;}
+.b1{top:10%; left:80%;}
+.b2{top:65%; left:10%;}
+.c1{top:30%; left:90%;}
+.c2{top:85%; left:75%;}
+.c3{top:12%; left:18%;}
+
 @keyframes spin{
   from{transform:translate(-50%,-50%) rotate(0deg)}
   to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.22)}
 }
 
 /* открытка */
@@ -75,8 +99,51 @@ body{
   perspective:1200px;
   cursor:pointer;
   position:relative;
-  overflow:hidden;
+  overflow:visible;
   z-index:2;
+  animation:cardFloat 4.8s ease-in-out infinite;
+  filter:drop-shadow(0 30px 45px rgba(0,0,0,.16));
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-28px;
+  transform:translateX(-50%);
+  width:68%;
+  height:26px;
+  border-radius:50%;
+  background:rgba(0,0,0,.16);
+  filter:blur(14px);
+  animation:shadowFloat 4.8s ease-in-out infinite;
+  z-index:0;
+  pointer-events:none;
+}
+
+.card::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:28px;
+  pointer-events:none;
+  background:linear-gradient(
+    135deg,
+    rgba(255,255,255,.22),
+    rgba(255,255,255,0) 35%,
+    rgba(255,255,255,.1) 60%,
+    rgba(255,255,255,0)
+  );
+  mix-blend-mode:screen;
+  opacity:.7;
+  z-index:4;
+}
+
+.card-shell{
+  position:absolute;
+  inset:0;
+  border-radius:26px;
+  overflow:hidden;
 }
 
 .side{
@@ -93,6 +160,7 @@ body{
   transform-style:preserve-3d;
   transition:transform .9s cubic-bezier(.2,.9,.2,1);
   box-shadow:0 25px 60px rgba(0,0,0,.18);
+  z-index:1;
 }
 
 .front{
@@ -171,12 +239,39 @@ canvas{
   to{opacity:.9}
 }
 
+@keyframes cardFloat{
+  0%,100%{
+    transform:translateY(0px) rotate(-0.6deg);
+  }
+  25%{
+    transform:translateY(-10px) rotate(0.4deg);
+  }
+  50%{
+    transform:translateY(-16px) rotate(-0.2deg);
+  }
+  75%{
+    transform:translateY(-8px) rotate(0.5deg);
+  }
+}
+
+@keyframes shadowFloat{
+  0%,100%{
+    transform:translateX(-50%) scaleX(1);
+    opacity:.18;
+  }
+  50%{
+    transform:translateX(-50%) scaleX(.88);
+    opacity:.1;
+  }
+}
+
 /* адаптация */
 @media (max-width: 1200px){
   .orbit1{width:900px;height:580px}
   .orbit2{width:1020px;height:690px}
   .orbit3{width:1120px;height:820px}
   .planet{width:128px;height:116px}
+  .pink-heart{font-size:36px}
 }
 
 @media (max-width: 860px){
@@ -184,6 +279,19 @@ canvas{
   .orbit1{width:760px;height:620px}
   .orbit2{width:880px;height:760px}
   .planet{width:108px;height:98px}
+  .pink-heart{font-size:30px}
+
+  .card{
+    height:440px;
+  }
+
+  .side{
+    padding:28px;
+  }
+
+  .message{
+    font-size:18px;
+  }
 }
 
 @media (max-width: 560px){
@@ -199,13 +307,13 @@ canvas{
   .orbit2,.orbit3{display:none}
   .orbit1{width:620px;height:780px;animation-duration:16s}
   .planet{width:92px;height:84px}
+  .pink-heart{font-size:26px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- SVG-шаблон для сердечек -->
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
@@ -231,6 +339,14 @@ canvas{
               fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"></path>
       </svg>
     </div>
+
+    <div class="planet pink a1">
+      <div class="pink-heart">💗</div>
+    </div>
+
+    <div class="planet pink a2">
+      <div class="pink-heart">💖</div>
+    </div>
   </div>
 
   <div class="orbit orbit2">
@@ -249,6 +365,14 @@ canvas{
               fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"></path>
       </svg>
     </div>
+
+    <div class="planet pink b1">
+      <div class="pink-heart">💗</div>
+    </div>
+
+    <div class="planet pink b2">
+      <div class="pink-heart">💞</div>
+    </div>
   </div>
 
   <div class="orbit orbit3">
@@ -259,36 +383,49 @@ canvas{
               fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"></path>
       </svg>
     </div>
+
+    <div class="planet pink c1">
+      <div class="pink-heart">💓</div>
+    </div>
+
+    <div class="planet pink c2">
+      <div class="pink-heart">💕</div>
+    </div>
+
+    <div class="planet pink c3">
+      <div class="pink-heart">💘</div>
+    </div>
   </div>
 </div>
 
 <div class="card" id="card">
-
-  <div class="side front">
-    <h1>💖 С 8 Марта</h1>
-    <div class="subtitle">Нажми, чтобы открыть</div>
-  </div>
-
-  <div class="side inside">
-    <div class="message">
-      Для самой красивой девушки 💖<br><br>
-      Пусть каждый твой день будет таким же
-      ярким, как твоя улыбка.<br>
-      Пусть рядом всегда будет тепло,
-      радость и любовь.<br><br>
-      Ты делаешь мой мир лучше.
+  <div class="card-shell">
+    <div class="side front">
+      <h1>💖 С 8 Марта</h1>
+      <div class="subtitle">Нажми, чтобы открыть</div>
     </div>
 
-    <div class="signature">Люблю тебя</div>
+    <div class="side inside">
+      <div class="message">
+        Для самой красивой девушки 💖<br><br>
+        Пусть каждый твой день будет таким же
+        ярким, как твоя улыбка.<br>
+        Пусть рядом всегда будет тепло,
+        радость и любовь.<br><br>
+        Ты делаешь мой мир лучше.
+      </div>
 
-    <div class="controls">
-      <button class="btn" id="hearts">💗 Сердечки</button>
-      <button class="btn secondary" id="kiss">💋 Поцелуй</button>
-      <button class="btn" id="tulips">🌷 Тюльпаны</button>
+      <div class="signature">Люблю тебя</div>
+
+      <div class="controls">
+        <button class="btn" id="hearts">💗 Сердечки</button>
+        <button class="btn secondary" id="kiss">💋 Поцелуй</button>
+        <button class="btn" id="tulips">🌷 Тюльпаны</button>
+      </div>
     </div>
-  </div>
 
-  <canvas id="fx"></canvas>
+    <canvas id="fx"></canvas>
+  </div>
 </div>
 
 <script>
@@ -479,8 +616,8 @@ document.getElementById('tulips').onclick = e => {
 for(let i=0;i<60;i++){
   const s = document.createElement('div');
   s.className = 'star';
-  s.style.left = Math.random()*100+'%';
-  s.style.top = Math.random()*100+'%';
+  s.style.left = Math.random()*100 + '%';
+  s.style.top = Math.random()*100 + '%';
   document.body.appendChild(s);
 }
 </script>
